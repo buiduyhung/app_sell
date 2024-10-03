@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
@@ -61,11 +62,10 @@ public class MainActivity extends AppCompatActivity {
         ActionBar();
         ActionViewFlipper();
         if (isConnected(this)){
-            Toast.makeText(getApplicationContext(), "have internet", Toast.LENGTH_SHORT).show();
             ActionViewFlipper();
             getProduct();
         }else {
-            Toast.makeText(getApplicationContext(), "Not internet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Không có internet, vui lòng kết nối !", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -76,7 +76,11 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(
                         productModel -> {
                             if (productModel.isSuccess()){
-                                Toast.makeText(getApplicationContext(), "results success", Toast.LENGTH_SHORT).show();
+                                listProduct = productModel.getResult();
+
+                                // create adapter product
+                                productAdapter = new ProductAdapter(getApplicationContext(), listProduct);
+                                listViewManHinhChinh.setAdapter(productAdapter);
                             }
                         }
                 )
@@ -126,8 +130,7 @@ public class MainActivity extends AppCompatActivity {
         // create list product
         listProduct = new ArrayList<>();
 
-        // create adapter product
-        productAdapter = new ProductAdapter(listProduct, getApplicationContext());
+
 
     }
 
@@ -140,7 +143,11 @@ public class MainActivity extends AppCompatActivity {
         }else {
             return false;
         }
-
     }
 
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
+    }
 }

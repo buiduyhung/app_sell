@@ -19,7 +19,7 @@ public class ProductAdapter extends BaseAdapter {
     List<Product> array;
     Context context;
 
-    public ProductAdapter(List<Product> array, Context context) {
+    public ProductAdapter(Context context, List<Product> array) {
         this.array = array;
         this.context = context;
     }
@@ -56,9 +56,9 @@ public class ProductAdapter extends BaseAdapter {
             view.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) view.getTag();
-            viewHolder.nameProduct.setText(array.get(i).getNameProduct());
-            Glide.with(context).load(array.get(i).getImageProduct()).into(viewHolder.imageProduct);
         }
+        viewHolder.nameProduct.setText(array.get(i).getNameProduct());
+        Glide.with(context).load(array.get(i).getImageProduct()).into(viewHolder.imageProduct);
 
         return view;
     }

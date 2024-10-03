@@ -15,7 +15,7 @@
         android:id="@+id/item_nameProduct"
         android:textSize="15dp"
         android:layout_marginLeft="10dp"
-        android:text="Điện thoại"
+        android:text="Phone"
         android:layout_gravity="center"
         android:textColor="@android:color/holo_red_light"
         android:layout_width="wrap_content"
