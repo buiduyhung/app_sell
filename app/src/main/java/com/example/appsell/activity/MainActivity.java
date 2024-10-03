@@ -7,8 +7,8 @@ import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
 import com.example.appsell.R;
-import com.example.appsell.adapter.ProductAdapter;
-import com.example.appsell.model.Product;
+import com.example.appsell.adapter.CategoryProductAdapter;
+import com.example.appsell.model.CategoryProduct;
 import com.example.appsell.retrofit.ApiSell;
 import com.example.appsell.retrofit.RetrofitClient;
 import com.example.appsell.ultis.Ultis;
@@ -16,7 +16,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -46,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     ListView listViewManHinhChinh;
     DrawerLayout drawerLayout;
-    ProductAdapter productAdapter;
-    List<Product> listProduct;
+    CategoryProductAdapter categoryProductAdapter;
+    List<CategoryProduct> listCategoryProduct;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     ApiSell apiSell;
 
@@ -63,25 +61,35 @@ public class MainActivity extends AppCompatActivity {
         ActionViewFlipper();
         if (isConnected(this)){
             ActionViewFlipper();
-            getProduct();
+            getCategoryProduct();
         }else {
             Toast.makeText(getApplicationContext(), "Không có internet, vui lòng kết nối !", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void getProduct() {
-        compositeDisposable.add(apiSell.getProduct()
+    private void getCategoryProduct() {
+        compositeDisposable.add(apiSell.getCategoryProduct()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        productModel -> {
-                            if (productModel.isSuccess()){
-                                listProduct = productModel.getResult();
-
-                                // create adapter product
-                                productAdapter = new ProductAdapter(getApplicationContext(), listProduct);
-                                listViewManHinhChinh.setAdapter(productAdapter);
+                        categoryProductModel -> {
+                            if (categoryProductModel.isSuccess()) {
+                                // Kiểm tra xem danh sách result có dữ liệu không
+                                if (categoryProductModel.getResult() != null && !categoryProductModel.getResult().isEmpty()) {
+                                    // Hiển thị tên sản phẩm đầu tiên
+                                    Toast.makeText(getApplicationContext(), categoryProductModel.getResult().get(0).getNameProduct(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Xử lý khi không có sản phẩm
+                                    Toast.makeText(getApplicationContext(), "Không có sản phẩm", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                // Xử lý khi yêu cầu thất bại
+                                Toast.makeText(getApplicationContext(), "Yêu cầu thất bại", Toast.LENGTH_SHORT).show();
                             }
+                        },
+                        throwable -> {
+                            // Xử lý lỗi từ API
+                            Toast.makeText(getApplicationContext(), "Lỗi kết nối: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                 )
         );
@@ -128,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerlayout);
 
         // create list product
-        listProduct = new ArrayList<>();
+        listCategoryProduct = new ArrayList<>();
 
 
 

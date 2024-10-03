@@ -2,10 +2,10 @@ package com.example.appsell.model;
 
 import java.util.List;
 
-public class ProductModel {
+public class CategoryProductModel {
     boolean success;
     String message;
-    List<Product> result;
+    List<CategoryProduct> result;
 
     public boolean isSuccess() {
         return success;
@@ -23,11 +23,11 @@ public class ProductModel {
         this.message = message;
     }
 
-    public List<Product> getResult() {
+    public List<CategoryProduct> getResult() {
         return result;
     }
 
-    public void setResult(List<Product> result) {
+    public void setResult(List<CategoryProduct> result) {
         this.result = result;
     }
 }

@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ImageView
-        android:id="@+id/item_imageProduct"
+        android:id="@+id/item_imgCategoryProduct"
         android:src="@drawable/ic_media_24"
         android:layout_marginLeft="10dp"
         android:layout_width="35dp"
         android:layout_height="35dp"/>
     <TextView
-        android:id="@+id/item_nameProduct"
+        android:id="@+id/item_nameCategoryProduct"
         android:textSize="15dp"
         android:layout_marginLeft="10dp"
         android:text="Phone"

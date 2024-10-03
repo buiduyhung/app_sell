@@ -1,6 +1,6 @@
 package com.example.appsell.model;
 
-public class Product {
+public class CategoryProduct {
     int id;
     String nameProduct;
     String imageProduct;
