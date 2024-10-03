@@ -1,6 +1,7 @@
 package com.example.appsell.adapter;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,4 +62,8 @@ public class ProductAdapter extends BaseAdapter {
 
         return view;
     }
+
+
+
+
 }

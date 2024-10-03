@@ -1,11 +1,17 @@
 package com.example.appsell.activity;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
 import com.example.appsell.R;
 import com.example.appsell.adapter.ProductAdapter;
 import com.example.appsell.model.Product;
+import com.example.appsell.retrofit.ApiSell;
+import com.example.appsell.retrofit.RetrofitClient;
+import com.example.appsell.ultis.Ultis;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,10 +27,16 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -35,15 +47,40 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     ProductAdapter productAdapter;
     List<Product> listProduct;
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    ApiSell apiSell;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        apiSell = RetrofitClient.getInstance(Ultis.BASE_URL).create(ApiSell.class);
+
         Anhxa();
         ActionBar();
         ActionViewFlipper();
+        if (isConnected(this)){
+            Toast.makeText(getApplicationContext(), "have internet", Toast.LENGTH_SHORT).show();
+            ActionViewFlipper();
+            getProduct();
+        }else {
+            Toast.makeText(getApplicationContext(), "Not internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getProduct() {
+        compositeDisposable.add(apiSell.getProduct()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        productModel -> {
+                            if (productModel.isSuccess()){
+                                Toast.makeText(getApplicationContext(), "results success", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                )
+        );
     }
 
     private void ActionViewFlipper() {
@@ -94,5 +131,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private boolean isConnected(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if ((wifi != null && wifi.isConnected()) || (mobile != null && mobile.isConnected())){
+            return true;
+        }else {
+            return false;
+        }
+
+    }
 
 }
