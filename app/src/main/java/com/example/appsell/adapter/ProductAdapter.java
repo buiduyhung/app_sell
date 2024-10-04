@@ -12,15 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.appsell.R;
-import com.example.appsell.model.ProductNew;
+import com.example.appsell.model.Product;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
-public class ProductNewAdapter extends RecyclerView.Adapter<ProductNewAdapter.MyViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
     Context context;
-    List<ProductNew> array;
+    List<Product> array;
 
-    public ProductNewAdapter(Context context, List<ProductNew> array) {
+    public ProductAdapter(Context context, List<Product> array) {
         this.context = context;
         this.array = array;
     }
@@ -35,10 +36,13 @@ public class ProductNewAdapter extends RecyclerView.Adapter<ProductNewAdapter.My
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ProductNew productNew = array.get(position);
-        holder.txt_name.setText(productNew.getName());
-        holder.txt_price.setText(productNew.getPrice());
-        Glide.with(context).load(productNew.getImage()).into(holder.img_image);
+        Product product = array.get(position);
+        holder.txt_name.setText(product.getName());
+
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+        holder.txt_price.setText("Giá: "+decimalFormat.format(Double.parseDouble(product.getPrice()))+ " VNĐ");
+
+        Glide.with(context).load(product.getImage()).into(holder.img_image);
     }
 
     @Override

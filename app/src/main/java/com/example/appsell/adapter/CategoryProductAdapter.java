@@ -56,12 +56,10 @@ public class CategoryProductAdapter extends BaseAdapter {
             view.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) view.getTag();
-            viewHolder.nameCategoryProduct.setText(array.get(i).getNameProduct());
-            Glide.with(context).load(array.get(i).getImageProduct()).into(viewHolder.imgCategoryProduct);
         }
 
-//        viewHolder.nameCategoryProduct.setText(array.get(i).getNameProduct());
-//        Glide.with(context).load(array.get(i).getImageProduct()).into(viewHolder.imgCategoryProduct);
+        viewHolder.nameCategoryProduct.setText(array.get(i).getName());
+        Glide.with(context).load(array.get(i).getImage()).into(viewHolder.imgCategoryProduct);
 
         return view;
     }

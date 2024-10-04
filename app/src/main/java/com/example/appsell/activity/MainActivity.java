@@ -8,7 +8,9 @@ import android.os.Bundle;
 import com.bumptech.glide.Glide;
 import com.example.appsell.R;
 import com.example.appsell.adapter.CategoryProductAdapter;
+import com.example.appsell.adapter.ProductAdapter;
 import com.example.appsell.model.CategoryProduct;
+import com.example.appsell.model.Product;
 import com.example.appsell.retrofit.ApiSell;
 import com.example.appsell.retrofit.RetrofitClient;
 import com.example.appsell.ultis.Ultis;
@@ -16,11 +18,13 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.animation.Animation;
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     List<CategoryProduct> listCategoryProduct;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     ApiSell apiSell;
+    List<Product> listProduct;
+    ProductAdapter productAdapter;
 
 
     @Override
@@ -58,13 +64,35 @@ public class MainActivity extends AppCompatActivity {
 
         Anhxa();
         ActionBar();
-        ActionViewFlipper();
+
         if (isConnected(this)){
+//            Toast.makeText(getApplicationContext(), "Có internet !", Toast.LENGTH_SHORT).show();
+
             ActionViewFlipper();
             getCategoryProduct();
+            getProduct();
         }else {
             Toast.makeText(getApplicationContext(), "Không có internet, vui lòng kết nối !", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void getProduct() {
+        compositeDisposable.add(apiSell.getProduct()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        productModel -> {
+                            if (productModel.isSuccess()){
+                                listProduct = productModel.getResult();
+                                productAdapter = new ProductAdapter(getApplicationContext(), listProduct);
+                                recyclerViewManHinhChinh.setAdapter(productAdapter);
+                            }
+                        },
+                        throwable -> {
+                            Toast.makeText(getApplicationContext(), "Không kết nối được với server "+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                )
+        );
     }
 
     private void getCategoryProduct() {
@@ -73,22 +101,14 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         categoryProductModel -> {
-                            if (categoryProductModel.isSuccess()) {
-                                // Kiểm tra xem danh sách result có dữ liệu không
-                                if (categoryProductModel.getResult() != null && !categoryProductModel.getResult().isEmpty()) {
-                                    // Hiển thị tên sản phẩm đầu tiên
-                                    Toast.makeText(getApplicationContext(), categoryProductModel.getResult().get(0).getNameProduct(), Toast.LENGTH_SHORT).show();
-                                } else {
-                                    // Xử lý khi không có sản phẩm
-                                    Toast.makeText(getApplicationContext(), "Không có sản phẩm", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                // Xử lý khi yêu cầu thất bại
-                                Toast.makeText(getApplicationContext(), "Yêu cầu thất bại", Toast.LENGTH_SHORT).show();
+                            if (categoryProductModel.isSuccess()){
+                                listCategoryProduct = categoryProductModel.getResult();
+                                categoryProductAdapter = new CategoryProductAdapter(getApplicationContext(), listCategoryProduct);
+                                listViewManHinhChinh.setAdapter(categoryProductAdapter);
                             }
                         },
                         throwable -> {
-                            // Xử lý lỗi từ API
+//                            Log.d("loggg", throwable.getMessage());
                             Toast.makeText(getApplicationContext(), "Lỗi kết nối: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                 )
@@ -130,13 +150,20 @@ public class MainActivity extends AppCompatActivity {
     private void Anhxa() {
         toolbar = findViewById(R.id.toolbarmanhinhchinh);
         viewFlipper = findViewById(R.id.viewflipper);
+
         recyclerViewManHinhChinh = findViewById(R.id.recycleview);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
+        recyclerViewManHinhChinh.setLayoutManager(layoutManager);
+        recyclerViewManHinhChinh.setHasFixedSize(true);
+
+
         listViewManHinhChinh = findViewById(R.id.listviewmahinhchinh);
         navigationView = findViewById(R.id.navigationview);
         drawerLayout = findViewById(R.id.drawerlayout);
 
         // create list product
         listCategoryProduct = new ArrayList<>();
+        listProduct = new ArrayList<>();
 
 
 

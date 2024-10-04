@@ -2,8 +2,8 @@ package com.example.appsell.model;
 
 public class CategoryProduct {
     int id;
-    String nameProduct;
-    String imageProduct;
+    String name;
+    String image;
 
     public int getId() {
         return id;
@@ -13,19 +13,19 @@ public class CategoryProduct {
         this.id = id;
     }
 
-    public String getNameProduct() {
-        return nameProduct;
+    public String getName() {
+        return name;
     }
 
-    public void setNameProduct(String nameProduct) {
-        this.nameProduct = nameProduct;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getImageProduct() {
-        return imageProduct;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageProduct(String imageProduct) {
-        this.imageProduct = imageProduct;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

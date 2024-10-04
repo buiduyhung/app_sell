@@ -2,17 +2,15 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:elevation="8dp"
-    app:cardCornerRadius="4dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="10dp"
+    app:cardCornerRadius="6dp"
     android:layout_width="160dp"
     android:layout_height="wrap_content">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-        <ImageView
-            android:src="@drawable/iconnew_w24"
-            android:layout_gravity="top|right"
-            android:layout_width="30dp"
-            android:layout_height="30dp"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -40,5 +38,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+        <ImageView
+            android:src="@drawable/iconnew_w24"
+            android:layout_gravity="top|right"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
 
 </androidx.cardview.widget.CardView>
