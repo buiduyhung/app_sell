@@ -1,6 +1,7 @@
 package com.example.appsell.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -66,16 +68,55 @@ public class MainActivity extends AppCompatActivity {
         ActionBar();
 
         if (isConnected(this)){
-//            Toast.makeText(getApplicationContext(), "Có internet !", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Có internet !", Toast.LENGTH_SHORT).show();
 
             ActionViewFlipper();
             getCategoryProduct();
             getProduct();
+            getEventClick();
+
         }else {
             Toast.makeText(getApplicationContext(), "Không có internet, vui lòng kết nối !", Toast.LENGTH_SHORT).show();
         }
     }
 
+    // Hàm sự kiện click chuyển đổi trang danh mục sản phẩm
+    private void getEventClick() {
+        listViewManHinhChinh.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        Intent home = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(home);
+                        break;
+                    case 1:
+                        Intent phone = new Intent(getApplicationContext(), PhoneActivity.class);
+                        phone.putExtra("category", 1);
+                        startActivity(phone);
+                        break;
+                    case 2:
+                        Intent laptop = new Intent(getApplicationContext(), LaptopActivity.class);
+                        startActivity(laptop);
+                        break;
+                    case 3:
+                        Intent accessory = new Intent(getApplicationContext(), AccessoryActivity.class);
+                        startActivity(accessory);
+                        break;
+                    case 4:
+                        Intent info = new Intent(getApplicationContext(), InfoActivity.class);
+                        startActivity(info);
+                        break;
+                    case 5:
+                        Intent contact = new Intent(getApplicationContext(), ContactActivity.class);
+                        startActivity(contact);
+                        break;
+                }
+            }
+        });
+    }
+
+    // Hàm lấy danh sách sản phẩm
     private void getProduct() {
         compositeDisposable.add(apiSell.getProduct()
                 .subscribeOn(Schedulers.io())
@@ -95,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    // Hàm lấy danh sách danh mục sản phẩm
     private void getCategoryProduct() {
         compositeDisposable.add(apiSell.getCategoryProduct()
                 .subscribeOn(Schedulers.io())
@@ -108,13 +150,14 @@ public class MainActivity extends AppCompatActivity {
                             }
                         },
                         throwable -> {
-//                            Log.d("loggg", throwable.getMessage());
+                            // Log.d("loggg", throwable.getMessage());
                             Toast.makeText(getApplicationContext(), "Lỗi kết nối: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                 )
         );
     }
 
+    // Hàm load thông tin quảng cáo
     private void ActionViewFlipper() {
         List<String> mangquangcao = new ArrayList<>();
         mangquangcao.add("https://mauweb.monamedia.net/thegioididong/wp-content/uploads/2017/12/banner-Le-hoi-phu-kien-800-300.png");
@@ -169,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // hàm kiểm tra kết nối internet
     private boolean isConnected(Context context){
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);

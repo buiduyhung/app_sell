@@ -62,6 +62,7 @@
             android:layout_gravity="start">
 
             <ListView
+                android:layout_marginTop="10dp"
                 android:id="@+id/listviewmahinhchinh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
