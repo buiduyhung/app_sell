@@ -1,10 +1,12 @@
 package com.example.appsell.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -37,6 +39,9 @@ public class PhoneActivity extends AppCompatActivity {
     int category;
     PhoneAdapter phoneAdapter;
     List<Product> listProduct;
+    LinearLayoutManager linearLayoutManager;
+    Handler handler = new Handler();
+    boolean isLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +52,76 @@ public class PhoneActivity extends AppCompatActivity {
 
         Anhxa();
         ActionToolbar();
-        getData();
+        getData(page);
+        addEventLoad();
     }
 
-    private void getData() {
+    private void addEventLoad() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (isLoading == false){
+                    if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == listProduct.size()-1){
+                        isLoading = true;
+                        loadMore();
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadMore() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                // add null
+                listProduct.add(null);
+                phoneAdapter.notifyItemInserted(listProduct.size()-1);
+            }
+        });
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // remover null
+                listProduct.remove(listProduct.size()-1);
+                phoneAdapter.notifyItemRemoved(listProduct.size());
+                page = page+1;
+                getData(page);
+                phoneAdapter.notifyDataSetChanged();
+                isLoading = false;
+
+            }
+        }, 2000);
+    }
+
+    private void getData(int page) {
         compositeDisposable.add(apiSell.getProductDetail(page,category)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     productModel -> {
                         if (productModel.isSuccess()){
-                            listProduct = productModel.getResult();
-                            phoneAdapter = new PhoneAdapter(getApplicationContext(), listProduct);
-                            recyclerView.setAdapter(phoneAdapter);
+                            if (phoneAdapter == null){
+                                listProduct = productModel.getResult();
+                                phoneAdapter = new PhoneAdapter(getApplicationContext(), listProduct);
+                                recyclerView.setAdapter(phoneAdapter);
+                            }else {
+                                int vitri = listProduct.size()-1;
+                                int soluongadd = productModel.getResult().size();
+                                for (int i=0; i<soluongadd; i++){
+                                    listProduct.add(productModel.getResult().get(i));
+                                }
+                                phoneAdapter.notifyItemRangeInserted(vitri,soluongadd);
+                            }
+                        }else {
+                            Toast.makeText(getApplicationContext(), "Loading data finish", Toast.LENGTH_SHORT).show();
+                            isLoading = true;
                         }
                     },
                     throwable -> {
@@ -84,8 +146,8 @@ public class PhoneActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recycleview_dt);
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
 
         listProduct = new ArrayList<>();
