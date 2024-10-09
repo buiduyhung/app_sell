@@ -95,7 +95,6 @@ public class PhoneActivity extends AppCompatActivity {
                 getData(page);
                 phoneAdapter.notifyDataSetChanged();
                 isLoading = false;
-
             }
         }, 2000);
     }
@@ -120,7 +119,7 @@ public class PhoneActivity extends AppCompatActivity {
                                 phoneAdapter.notifyItemRangeInserted(vitri,soluongadd);
                             }
                         }else {
-                            Toast.makeText(getApplicationContext(), "Loading data finish", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getApplicationContext(), "Loading data finish", Toast.LENGTH_SHORT).show();
                             isLoading = true;
                         }
                     },

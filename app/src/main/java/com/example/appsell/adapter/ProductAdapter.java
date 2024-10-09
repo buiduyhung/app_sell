@@ -1,6 +1,7 @@
 package com.example.appsell.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.appsell.Interface.ItemClickListener;
 import com.example.appsell.R;
+import com.example.appsell.activity.DetailActivity;
 import com.example.appsell.model.Product;
 
 import java.text.DecimalFormat;
@@ -43,6 +46,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         holder.txt_price.setText("Giá: "+decimalFormat.format(Double.parseDouble(product.getPrice()))+ " VNĐ");
 
         Glide.with(context).load(product.getImage()).into(holder.img_image);
+
+        holder.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onClick(View view, int pos, boolean isLongClick) {
+                if (!isLongClick){
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra("detail", product);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -50,15 +65,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         return array.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView txt_price, txt_name;
         ImageView img_image;
+        private ItemClickListener itemClickListener;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             txt_name = itemView.findViewById(R.id.itemsp_name);
             txt_price = itemView.findViewById(R.id.itemsp_price);
             img_image = itemView.findViewById(R.id.itemsp_image);
+            itemView.setOnClickListener(this);
+        }
+
+        public void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
+
+        @Override
+        public void onClick(View view) {
+            itemClickListener.onClick(view, getAdapterPosition(), false);
         }
     }
 

@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(phone);
                         break;
                     case 2:
-                        Intent laptop = new Intent(getApplicationContext(), LaptopActivity.class);
+                        Intent laptop = new Intent(getApplicationContext(), PhoneActivity.class);
+                        laptop.putExtra("category", 2);
                         startActivity(laptop);
                         break;
                     case 3:
