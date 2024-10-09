@@ -209,6 +209,9 @@ public class MainActivity extends AppCompatActivity {
         listCategoryProduct = new ArrayList<>();
         listProduct = new ArrayList<>();
 
+        if (Ultis.cartList == null){
+            Ultis.cartList = new ArrayList<>();
+        }
 
 
     }

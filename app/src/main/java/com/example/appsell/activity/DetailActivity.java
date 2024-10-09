@@ -18,7 +18,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.appsell.R;
+import com.example.appsell.model.Cart;
 import com.example.appsell.model.Product;
+import com.example.appsell.ultis.Ultis;
+import com.nex3z.notificationbadge.NotificationBadge;
 
 import java.text.DecimalFormat;
 
@@ -28,6 +31,8 @@ public class DetailActivity extends AppCompatActivity {
     ImageView imgP;
     Spinner spinner;
     Toolbar toolbar;
+    Product product;
+    NotificationBadge badge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +42,58 @@ public class DetailActivity extends AppCompatActivity {
         initView();
         ActionToolbar();
         initData();
+        initControl();
+    }
+
+    private void initControl() {
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addCart();
+            }
+        });
+    }
+
+    private void addCart() {
+        if (Ultis.cartList.size() > 0){
+            boolean flag = false;
+            int qty = Integer.parseInt(spinner.getSelectedItem().toString());
+            for (int i = 0; i<Ultis.cartList.size(); i++){
+                if (Ultis.cartList.get(i).getIdProduct() == product.getId()){
+                    Ultis.cartList.get(i).setQty(qty + Ultis.cartList.get(i).getQty());
+                    long price = Long.parseLong(product.getPrice()) * Ultis.cartList.get(i).getQty();
+                    Ultis.cartList.get(i).setPriceProduct(price);
+                    flag = true;
+                }
+            }
+            if (flag == false){
+                long price = Long.parseLong(product.getPrice()) * qty;
+                Cart cart = new Cart();
+                cart.setPriceProduct(price);
+                cart.setQty(qty);
+                cart.setIdProduct(product.getId());
+                cart.setNameProduct(product.getName());
+                cart.setImgProduct(product.getImage());
+                Ultis.cartList.add(cart);
+            }
+
+        }else {
+            int qty = Integer.parseInt(spinner.getSelectedItem().toString());
+            long price = Long.parseLong(product.getPrice()) * qty;
+            Cart cart = new Cart();
+            cart.setPriceProduct(price);
+            cart.setQty(qty);
+            cart.setIdProduct(product.getId());
+            cart.setNameProduct(product.getName());
+            cart.setImgProduct(product.getImage());
+            Ultis.cartList.add(cart);
+        }
+
+        badge.setText(String.valueOf(Ultis.cartList.size()));
     }
 
     private void initData() {
-        Product product = (Product) getIntent().getSerializableExtra("detail");
+        product = (Product) getIntent().getSerializableExtra("detail");
         nameP.setText(product.getName());
         contentP.setText(product.getContent());
         Glide.with(getApplicationContext()).load(product.getImage()).into(imgP);
@@ -60,6 +113,11 @@ public class DetailActivity extends AppCompatActivity {
         spinner = findViewById(R.id.spinner);
         imgP = findViewById(R.id.img_detail);
         toolbar = findViewById(R.id.toolbar);
+
+        badge = findViewById(R.id.menu_sl);
+        if (Ultis.cartList != null){
+            badge.setText(String.valueOf(Ultis.cartList.size()));
+        }
     }
 
     private void ActionToolbar() {
